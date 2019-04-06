@@ -108,10 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Theme.of(context).accentColor,
               shape: new StadiumBorder(),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => GaragePage()));
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => GaragePage()));
               },
             ),
           ],

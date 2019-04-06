@@ -1,14 +1,35 @@
+import 'package:egitim/model/full_screen_dialog_demo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Car {
-  String nickName;
-  String description;
-  int maxSpeed;
-  String image;
-  bool isFavorite;
+  String _name;
+  String _description;
+  int _maxSpeed;
+  String _image;
+  bool _isFavorite;
 
-  Car(this.nickName, this.description, this.maxSpeed, this.image, this.isFavorite);
+  String get name => _name;
+
+  String get description => _description;
+
+  int get maxSpeed => _maxSpeed;
+
+  String get image => _image;
+
+  bool get isFavorite => _isFavorite;
+
+  set isFavorite(bool value) {
+    _isFavorite = value;
+  }
+
+  set image(String value) {
+    _image = value;
+  }
+
+  Car(this._name, this._description, this._maxSpeed, this._image, this._isFavorite);
+
+  Car.added(this._name, this._description, this._isFavorite);
 }
 
 typedef BannerTapCallback = void Function(Car car);
@@ -56,6 +77,23 @@ class GaragePageState extends State<GaragePage> {
         title: Text('My Garage'),
         leading: BackButton(),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute<Car>(
+                    builder: (BuildContext context) => FullScreenDialogDemo(),
+                    fullscreenDialog: true,
+                  )).then((car) {
+                car.image = 'images/default.png';
+                setState(() {
+                  myGarage.add(car);
+                });
+                _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('You added: ${car.name}')));
+              });
+            },
+          ),
           IconButton(
             icon: Icon(listViewNumber == 1 ? Icons.view_column : Icons.view_list),
             onPressed: () {
@@ -106,9 +144,8 @@ class GaragePageState extends State<GaragePage> {
                     onLongPress: () {
                       showDialog(
                           context: context,
-                          builder: (context) =>
-                              AlertDialog(
-                                  content: Text('Are you sure you want to delete ${car.nickName}?'),
+                          builder: (context) => AlertDialog(
+                                  content: Text('Are you sure you want to delete ${car.name}?'),
                                   actions: <Widget>[
                                     FlatButton(
                                         child: const Text('NO'),
@@ -125,8 +162,7 @@ class GaragePageState extends State<GaragePage> {
                           setState(() {
                             myGarage.remove(value);
                           });
-                          _scaffoldKey.currentState
-                              .showSnackBar(SnackBar(content: Text('You deleted: ${value.nickName}')));
+                          _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('You deleted: ${value.name}')));
                         }
                       });
                     },
@@ -143,7 +179,7 @@ class GaragePageState extends State<GaragePage> {
 
 class GridDemoPhotoItem extends StatelessWidget {
   GridDemoPhotoItem({Key key, @required this.car, @required this.tileStyle, @required this.onBannerTap})
-      : assert(car != null && car.nickName != null),
+      : assert(car != null && car.name != null),
         assert(tileStyle != null),
         assert(onBannerTap != null),
         super(key: key);
@@ -155,10 +191,10 @@ class GridDemoPhotoItem extends StatelessWidget {
   void showPhoto(BuildContext context) {
     Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) {
       return Scaffold(
-        appBar: AppBar(title: Text(car.nickName)),
+        appBar: AppBar(title: Text(car.name)),
         body: SizedBox.expand(
           child: Hero(
-            tag: car.nickName,
+            tag: car.name,
             child: GridPhotoViewer(car: car),
           ),
         ),
@@ -173,7 +209,7 @@ class GridDemoPhotoItem extends StatelessWidget {
           showPhoto(context);
         },
         child: Hero(
-            tag: car.nickName,
+            tag: car.name,
             child: Image.asset(
               car.image,
               fit: BoxFit.fitWidth,
@@ -192,7 +228,7 @@ class GridDemoPhotoItem extends StatelessWidget {
               onBannerTap(car);
             },
             child: GridTileBar(
-              title: _GridTitleText(car.nickName),
+              title: _GridTitleText(car.name),
               backgroundColor: Colors.black45,
               leading: Icon(
                 icon,
@@ -211,7 +247,7 @@ class GridDemoPhotoItem extends StatelessWidget {
             },
             child: GridTileBar(
               backgroundColor: Colors.black45,
-              title: _GridTitleText(car.nickName),
+              title: _GridTitleText(car.name),
               subtitle: _GridTitleText(car.description),
               trailing: Icon(
                 icon,
